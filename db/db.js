@@ -1,22 +1,55 @@
-  var mongoose = require("mongoose");
-  var Promise = require("bluebird");
-  mongoose.Promise = Promise;
+var mongoose = require("mongoose");
+var Promise = require("bluebird");
+mongoose.Promise = Promise;
 
-//DB
-  var databaseUri ="mongodb://localhost/schedulr";
+const tryConnect = async() => {
+	try {
+		if (process.env.MONGO_URI) {
+			mongoose.connect(process.env.MONGO_URI, {
+				useMongoClient: true
+			});
+		} else {
+			throw("MONGO_URI not set");
+		}
+	} catch(e) {
+		if(err.message.includes("ECONNREFUSED")) {
+			console.log("Error: The server was not able to reach MongoDB. Maybe it's not running?");
+		} else {
+			console.error("Uncaught mongoose Error: ", err.message);
+		}
+	}
 
-  if(process.env.MONGODB_URI) {
-      mongoose.connect(process.env.MONGODB_URI);
-    } else {
-      mongoose.connect(databaseUri);
-    }
+	const connected = await new Promise(resolve => {
+		var db = mongoose.connection;
+		db.on("error", async function (err) {
+			if(err.message.includes("ECONNREFUSED")) {
+				console.log("Error: The server was not able to reach MongoDB. Maybe it's not running?");
+			} else {
+				console.error("Uncaught mongoose Error: ", err.message);
+			}
+			try {
+				await db.close();
+			} catch (e) {
+				console.log("Error closing:", e.message);
+			}
+			
+			resolve(false);
+		});
+	
+		db.once("open", function () {
+			console.log("Mongoose connection successful.");
+			resolve(true);
+		});
+		
+		db.once("close", function () {
+			console.log("Mongoose connection lost.");
+			resolve(false);
+		});
+	})
 
-  var db = mongoose.connection;
+	if(!connected) {
+		setTimeout(tryConnect, 5000);
+	}
+}
 
-  db.on("error", function(err) {
-    console.log("Mongoose Error: ", err);
-  });
-
-  db.once("open", function() {
-    console.log("Mongoose connection successful.");
-  });
+tryConnect();

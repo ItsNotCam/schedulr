@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  node:
+    image: cam:schedulr
+    hostname: node
+    working_dir: /app
+    ports:
+      - "3500:8080"
+    depends_on:
+      mongo-db:
+        condition: service_healthy
+    volumes:
+      - ./.env:/app/.env
+    networks:
+      default:
+      db:
+        ipv4_address: 10.10.10.4
+
+  mongo-db:
+    image: mongo:4.4
+    hostname: mongo
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "rs.status"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      db:
+        ipv4_address: 10.10.10.3
+
+networks:
+  db:
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.10.10.0/24
