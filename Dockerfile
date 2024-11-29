@@ -12,7 +12,13 @@ COPY . .
 
 # Install dependencies
 RUN npm i
+
+WORKDIR /app/app
+RUN npm i
 RUN npm run build
+
+WORKDIR /app
+RUN rm -rf app
 
 # Expose the port the app runs on
 EXPOSE 8080

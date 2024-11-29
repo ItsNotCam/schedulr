@@ -1,6 +1,6 @@
-var axios = require("axios");
+import axios from 'axios';
 
-var helper = {
+const helper = {
 
   getAllEmployees: function() {
     return axios.get("/getAllEmployees");
@@ -39,7 +39,7 @@ var helper = {
     });
   },
 
-  addEmployee: function(firstName, lastName, addressOne, addressTwo, city, state, zip, email, phone, phoneType) {
+  addEmployee: function(firstName, lastName, addressOne, addressTwo, city, state, zip, phone, phoneType) {
     return axios.post("/addEmployee", {
         firstName: firstName,
         lastName: lastName,
@@ -48,12 +48,11 @@ var helper = {
         city: city,
         state: state,
         zip: zip,
-        email: email,
         phone: phone,
         phoneType: phoneType });
   },
 
-  updateEmployee: function(id, firstName, lastName, addressOne, addressTwo, city, state, zip, email, phone, phoneType) {
+  updateEmployee: function(id, firstName, lastName, addressOne, addressTwo, city, state, zip, phone, phoneType) {
        return axios.put("/updateEmployee/" + id, {
            firstName: firstName,
            lastName: lastName,
@@ -62,7 +61,6 @@ var helper = {
            city: city,
            state: state,
            zip: zip,
-           email: email,
            phone: phone,
            phoneType: phoneType
        });
@@ -94,4 +92,4 @@ var helper = {
   }
 };
 
-module.exports = helper;
+export default helper;

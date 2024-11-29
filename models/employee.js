@@ -23,9 +23,6 @@ var EmployeeSchema = new Schema({
     zip: {
         type: String
     },
-    email: {
-        type: String
-    },
     phone: {
         type: String
     },

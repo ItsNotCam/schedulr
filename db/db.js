@@ -1,13 +1,10 @@
 var mongoose = require("mongoose");
-var Promise = require("bluebird");
 mongoose.Promise = Promise;
 
 const tryConnect = async() => {
 	try {
 		if (process.env.MONGO_URI) {
-			mongoose.connect(process.env.MONGO_URI, {
-				useMongoClient: true
-			});
+			mongoose.connect(process.env.MONGO_URI);
 		} else {
 			throw("MONGO_URI not set");
 		}
